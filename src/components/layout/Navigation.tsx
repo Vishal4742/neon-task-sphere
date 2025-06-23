@@ -1,13 +1,17 @@
 
 import React from 'react';
 import { Calendar, Clock, Archive, Zap } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export const Navigation: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const navItems = [
-    { icon: Clock, label: 'Dashboard', active: true },
-    { icon: Zap, label: 'Events' },
-    { icon: Calendar, label: 'Reminders' },
-    { icon: Archive, label: 'Archive' },
+    { icon: Clock, label: 'Dashboard', path: '/' },
+    { icon: Zap, label: 'Events', path: '/events' },
+    { icon: Calendar, label: 'Reminders', path: '/reminders' },
+    { icon: Archive, label: 'Archive', path: '/archive' },
   ];
 
   return (
@@ -17,8 +21,9 @@ export const Navigation: React.FC = () => {
           {navItems.map((item, index) => (
             <button
               key={index}
+              onClick={() => navigate(item.path)}
               className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 ${
-                item.active
+                location.pathname === item.path
                   ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-400 shadow-lg shadow-cyan-500/25'
                   : 'text-slate-400 hover:text-white hover:bg-white/10'
               }`}
