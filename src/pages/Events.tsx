@@ -7,18 +7,19 @@ import { EventsBubbles } from '@/components/events/EventsBubbles';
 const Events = () => {
   return (
     <AppLayout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center mb-8">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-4">
-              Events Manager
+      <div className="container mx-auto px-4 pt-24 pb-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Clean header section */}
+          <div className="mb-12">
+            <h1 className="text-4xl font-bold text-white mb-3">
+              Events
             </h1>
             <p className="text-slate-400 text-lg">
-              Organize your events with style
+              Organize and manage your events with style
             </p>
           </div>
           
-          <div className="space-y-12">
+          <div className="space-y-16">
             <EventsGrid />
             <EventsBubbles />
           </div>
