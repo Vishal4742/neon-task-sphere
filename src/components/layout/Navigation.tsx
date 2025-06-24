@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Calendar, Clock, Archive, Zap, LogOut } from 'lucide-react';
+import { Calendar, Clock, Archive, Zap, LogOut, User } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -17,6 +17,7 @@ export const Navigation: React.FC = () => {
     { icon: Zap, label: 'Events', path: '/events' },
     { icon: Calendar, label: 'Reminders', path: '/reminders' },
     { icon: Archive, label: 'Archive', path: '/archive' },
+    { icon: User, label: 'Profile', path: '/profile' },
   ];
 
   return (
