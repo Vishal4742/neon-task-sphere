@@ -9,7 +9,138 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      events: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          date: string | null
+          description: string | null
+          event_type: Database["public"]["Enums"]["event_type"]
+          id: string
+          location: string | null
+          priority: Database["public"]["Enums"]["priority_level"] | null
+          status: Database["public"]["Enums"]["task_status"]
+          time: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          date?: string | null
+          description?: string | null
+          event_type?: Database["public"]["Enums"]["event_type"]
+          id?: string
+          location?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"] | null
+          status?: Database["public"]["Enums"]["task_status"]
+          time?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          date?: string | null
+          description?: string | null
+          event_type?: Database["public"]["Enums"]["event_type"]
+          id?: string
+          location?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"] | null
+          status?: Database["public"]["Enums"]["task_status"]
+          time?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_completed: boolean
+          priority: Database["public"]["Enums"]["priority_level"] | null
+          reminder_date: string
+          reminder_time: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_completed?: boolean
+          priority?: Database["public"]["Enums"]["priority_level"] | null
+          reminder_date: string
+          reminder_time?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_completed?: boolean
+          priority?: Database["public"]["Enums"]["priority_level"] | null
+          reminder_date?: string
+          reminder_time?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          date: string
+          description: string | null
+          hour: number
+          id: string
+          priority: Database["public"]["Enums"]["priority_level"] | null
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          date?: string
+          description?: string | null
+          hour: number
+          id?: string
+          priority?: Database["public"]["Enums"]["priority_level"] | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          date?: string
+          description?: string | null
+          hour?: number
+          id?: string
+          priority?: Database["public"]["Enums"]["priority_level"] | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +149,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      event_type: "organized" | "unorganized"
+      priority_level: "low" | "medium" | "high" | "urgent"
+      task_status: "pending" | "completed" | "archived"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +266,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      event_type: ["organized", "unorganized"],
+      priority_level: ["low", "medium", "high", "urgent"],
+      task_status: ["pending", "completed", "archived"],
+    },
   },
 } as const

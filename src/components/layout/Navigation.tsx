@@ -1,11 +1,16 @@
 
 import React from 'react';
-import { Calendar, Clock, Archive, Zap } from 'lucide-react';
+import { Calendar, Clock, Archive, Zap, LogOut } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 export const Navigation: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, signOut } = useAuth();
+
+  // Don't show navigation if user is not authenticated
+  if (!user) return null;
 
   const navItems = [
     { icon: Clock, label: 'Dashboard', path: '/' },
@@ -32,6 +37,14 @@ export const Navigation: React.FC = () => {
               <span className="font-medium">{item.label}</span>
             </button>
           ))}
+          
+          <button
+            onClick={signOut}
+            className="flex items-center space-x-2 px-4 py-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Sign Out</span>
+          </button>
         </div>
       </div>
     </nav>
