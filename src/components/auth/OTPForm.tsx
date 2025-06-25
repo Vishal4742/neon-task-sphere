@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { sendOtp, verifyOtp } from '@/api/auth';
 import { ArrowLeft, Mail, Smartphone } from 'lucide-react';
 
 interface OTPFormProps {
@@ -19,49 +19,34 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, phone, onBack, isSignUp
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
-  const [otpMethod, setOtpMethod] = useState<'email' | 'phone'>('email');
+  // Only email OTP is supported now
+  const otpMethod = 'email';
 
   const handleVerifyOTP = async () => {
     if (otp.length !== 6) {
       toast.error('Please enter a valid 6-digit code');
       return;
     }
-
     setLoading(true);
     try {
-      const { error } = await supabase.auth.verifyOtp({
-        email,
-        token: otp,
-        type: isSignUp ? 'signup' : 'email',
-      });
-
-      if (error) throw error;
+      await verifyOtp(email, otp);
       toast.success('Successfully verified!');
+      // Optionally call onBack or redirect
     } catch (error: any) {
-      toast.error(error.message || 'Invalid verification code');
+      toast.error(error.response?.data?.message || error.message || 'Invalid verification code');
     } finally {
       setLoading(false);
     }
   };
 
+
   const handleResendOTP = async () => {
     setResendLoading(true);
     try {
-      if (otpMethod === 'email') {
-        const { error } = await supabase.auth.signInWithOtp({
-          email,
-        });
-        if (error) throw error;
-      } else if (otpMethod === 'phone' && phone) {
-        const { error } = await supabase.auth.signInWithOtp({
-          phone,
-        });
-        if (error) throw error;
-      }
-      
-      toast.success(`Verification code sent to your ${otpMethod}!`);
+      await sendOtp(email);
+      toast.success('Verification code sent to your email!');
     } catch (error: any) {
-      toast.error(error.message || 'Failed to resend code');
+      toast.error(error.response?.data?.message || error.message || 'Failed to resend code');
     } finally {
       setResendLoading(false);
     }
@@ -87,30 +72,13 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, phone, onBack, isSignUp
           <div className="flex space-x-2">
             <Button
               type="button"
-              variant={otpMethod === 'email' ? 'default' : 'outline'}
-              onClick={() => setOtpMethod('email')}
-              className={`flex-1 ${otpMethod === 'email' 
-                ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-white border border-cyan-500/30' 
-                : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
-              }`}
+              variant={'default'}
+              className="flex-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-white border border-cyan-500/30"
+              disabled
             >
               <Mail className="w-4 h-4 mr-2" />
               Email
             </Button>
-            {phone && (
-              <Button
-                type="button"
-                variant={otpMethod === 'phone' ? 'default' : 'outline'}
-                onClick={() => setOtpMethod('phone')}
-                className={`flex-1 ${otpMethod === 'phone' 
-                  ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-white border border-cyan-500/30' 
-                  : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
-                }`}
-              >
-                <Smartphone className="w-4 h-4 mr-2" />
-                Phone
-              </Button>
-            )}
           </div>
 
           {/* OTP Input */}

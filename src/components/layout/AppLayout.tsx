@@ -1,23 +1,19 @@
-
 import React from 'react';
 import { Navigation } from './Navigation';
 
-interface AppLayoutProps {
-  children: React.ReactNode;
-}
-
-export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Background gradient effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-pink-900/20" />
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-      
+export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+    {/* Glassy background overlay */}
+    <div className="absolute inset-0 bg-white/10 backdrop-blur-2xl z-0 pointer-events-none" />
+    <header className="h-16 flex items-center px-6 bg-white/20 backdrop-blur-lg border-b border-white/20 shadow-xl sticky top-0 z-40">
+      <span className="text-2xl font-bold text-white tracking-wide font-display">MultiTask</span>
+      <div className="ml-auto flex items-center gap-4">
+        {/* User avatar or quick actions here */}
+      </div>
+    </header>
+    <div className="flex flex-1 relative z-10">
       <Navigation />
-      <main className="relative z-10">
-        {children}
-      </main>
+      <main className="flex-1 p-6">{children}</main>
     </div>
-  );
-};
+  </div>
+);

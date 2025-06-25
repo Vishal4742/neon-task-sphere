@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { EventsGrid } from '@/components/events/EventsGrid';
@@ -19,7 +18,7 @@ const Events = () => {
             </p>
           </div>
           
-          <div className="space-y-16">
+          <div className="space-y-16 animate-fade-in-up">
             <EventsGrid />
             <EventsBubbles />
           </div>

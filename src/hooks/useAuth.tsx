@@ -1,73 +1,117 @@
-
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { authAPI } from '@/api';
+
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  isGuest?: boolean;
+}
 
 interface AuthContextType {
   user: User | null;
-  session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (userData: { name: string; email: string; password: string }) => Promise<void>;
   signOut: () => Promise<void>;
+  sendOtp: (email: string) => Promise<any>;
+  verifyOtp: (email: string, otp: string) => Promise<any>;
+  createGuestUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
+    // Check for existing token and user data on app load
+    const token = localStorage.getItem('accessToken');
+    const userData = localStorage.getItem('user');
+    
+    if (token && userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('user');
       }
-    );
-
-    return () => subscription.unsubscribe();
+    }
+    setLoading(false);
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) throw error;
+    try {
+      const data = await authAPI.login({ email, password });
+      localStorage.setItem('accessToken', data.token);
+      localStorage.setItem('user', JSON.stringify(data));
+      setUser(data);
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
-  const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (error) throw error;
+  const signUp = async (userData: { name: string; email: string; password: string }) => {
+    try {
+      const data = await authAPI.register(userData);
+      localStorage.setItem('accessToken', data.token);
+      localStorage.setItem('user', JSON.stringify(data));
+      setUser(data);
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
+  };
+
+  const createGuestUser = async () => {
+    try {
+      const data = await authAPI.createGuestUser();
+      localStorage.setItem('accessToken', data.token);
+      localStorage.setItem('user', JSON.stringify(data));
+      setUser(data);
+    } catch (error) {
+      console.error('❌ Guest user creation error:', error);
+      throw error;
+    }
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    try {
+      await authAPI.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('user');
+      setUser(null);
+    }
+  };
+
+  const sendOtp = async (email: string) => {
+    return authAPI.sendOtp(email);
+  };
+
+  const verifyOtp = async (email: string, otp: string) => {
+    const data = await authAPI.verifyOtp(email, otp);
+    localStorage.setItem('accessToken', data.token);
+    localStorage.setItem('user', JSON.stringify(data));
+    setUser(data);
+    return data;
   };
 
   return (
     <AuthContext.Provider value={{
       user,
-      session,
       loading,
       signIn,
       signUp,
       signOut,
+      sendOtp,
+      verifyOtp,
+      createGuestUser,
     }}>
       {children}
     </AuthContext.Provider>

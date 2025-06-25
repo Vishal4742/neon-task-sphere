@@ -1,73 +1,126 @@
-# Welcome to your Lovable project
+# MultiTask
 
-## Project info
+A modern, full-stack event and task manager app with a beautiful glassmorphism UI, designer typography, and robust authentication. Built with React, TypeScript, Tailwind CSS, Express, and MongoDB.
 
-**URL**: https://lovable.dev/projects/cf3bc929-c647-44d3-8bd4-31ba97729a81
+---
 
-## How can I edit this code?
+## ✨ Features
+- **Glassmorphism UI**: Liquid glass effects throughout the app for a modern, premium feel.
+- **Designer Typography**: Uses Space Grotesk for a clean, creative look.
+- **Event & Task Management**: Create, view, update, and archive events, reminders, and todos.
+- **Hourly Todos**: Organize your day by the hour.
+- **Reminders**: Never miss important tasks or events.
+- **User Authentication**: Register, login, OTP login, and guest mode with JWT.
+- **Profile Management**: Update your name, phone, and bio.
+- **Responsive Design**: Works beautifully on desktop and mobile.
+- **Notifications**: Global toast system for feedback.
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🛠️ Tech Stack
+- **Frontend**: React, TypeScript, Vite, Tailwind CSS, shadcn/ui, Space Grotesk font
+- **Backend**: Express, TypeScript, MongoDB, Mongoose, JWT, bcrypt, nodemailer
+- **Other**: React Router, Axios, ESLint, Prettier
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/cf3bc929-c647-44d3-8bd4-31ba97729a81) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📁 Folder Structure
+```
+task-manager-app/
+  backend/         # Express + MongoDB API
+    controllers/   # Route controllers (auth, events, reminders, todos, users)
+    middleware/    # Auth, error, rate limiting
+    models/        # Mongoose models
+    routes/        # API routes
+    utils/         # Utility functions (mailer, token)
+    server.ts      # Entry point
+    ...
+  frontend/        # React + Vite + Tailwind app
+    src/
+      components/  # UI, layout, auth, events, reminders, etc.
+      hooks/       # Custom React hooks
+      pages/       # Main pages (Index, Events, Reminders, Archive, Profile)
+      api/         # Axios instance and API functions
+      context/     # Notification and Auth context
+      ...
+    index.html
+    tailwind.config.ts
+    ...
+```
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
+### 1. Clone the Repository
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone https://github.com/YOUR_USERNAME/multitask-app.git
+cd multitask-app
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 2. Setup the Backend
+```sh
+cd backend
+cp .env.example .env # Fill in your MongoDB URI and secrets
+npm install
+npm start
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+#### Example `.env` for Backend
+```
+MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/multitask
+JWT_SECRET=your_jwt_secret
+JWT_REFRESH_SECRET=your_refresh_secret
+EMAIL_USER=your_gmail@gmail.com
+EMAIL_PASS=your_gmail_app_password
+NODE_ENV=development
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### 3. Setup the Frontend
+```sh
+cd ../frontend
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+#### Environment Variables (Frontend)
+- If you need to set API URLs, use Vite's `.env` system (e.g., `VITE_API_URL`).
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 🏗️ Build for Production
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Frontend
+```sh
+npm run build
+npm run preview # To test the production build locally
+```
 
-## What technologies are used for this project?
+### Backend
+- Deploy to Render, Railway, Heroku, or your server.
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🌐 Deployment
+- **Frontend**: Deploy the `frontend` folder to Vercel, Netlify, or your static host. Set environment variables as needed.
+- **Backend**: Deploy the `backend` folder to Render, Railway, Heroku, or your server. Set environment variables in your dashboard.
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/cf3bc929-c647-44d3-8bd4-31ba97729a81) and click on Share -> Publish.
+## 🧩 Contribution
+1. Fork the repo and clone your fork.
+2. Create a new branch: `git checkout -b feature/your-feature`
+3. Make your changes and commit: `git commit -m "Add your feature"`
+4. Push to your fork: `git push origin feature/your-feature`
+5. Open a Pull Request on GitHub.
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## 📄 License
+[MIT](LICENSE)
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 🙏 Credits
+- UI inspired by modern glassmorphism and designer portfolios.
+- Built with love by [Your Name] and contributors.

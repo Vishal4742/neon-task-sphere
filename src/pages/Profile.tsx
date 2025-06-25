@@ -1,6 +1,6 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { authAPI } from '@/api';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,81 +8,70 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import { User, Camera } from 'lucide-react';
 
 interface Profile {
-  id: string;
-  email: string | null;
-  full_name: string | null;
-  avatar_url: string | null;
-  phone: string | null;
-  bio: string | null;
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  bio?: string;
+  avatar_url?: string;
 }
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
-    full_name: '',
+    name: '',
     phone: '',
     bio: '',
   });
 
   useEffect(() => {
-    if (user) {
-      fetchProfile();
-    }
-  }, [user]);
-
-  const fetchProfile = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user?.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        throw error;
+    if (authLoading) return;
+    let currentUser = user;
+    if (!currentUser) {
+      try {
+        const stored = localStorage.getItem('user');
+        if (stored) currentUser = JSON.parse(stored);
+      } catch (e) {
+        localStorage.removeItem('user');
       }
-
-      if (data) {
+    }
+    if (!currentUser || !currentUser._id) {
+      setError('You must be logged in to view your profile.');
+      setProfile(null);
+      return;
+    }
+    setError('');
+    setLoading(true);
+    authAPI.getProfile()
+      .then((data) => {
         setProfile(data);
         setFormData({
-          full_name: data.full_name || '',
+          name: data.name || '',
           phone: data.phone || '',
           bio: data.bio || '',
         });
-      }
-    } catch (error: any) {
-      toast.error('Error loading profile: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+      })
+      .catch((err) => {
+        setError(err?.response?.data?.message || 'Error loading profile');
+        setProfile(null);
+      })
+      .finally(() => setLoading(false));
+  }, [user, authLoading]);
 
   const handleSave = async () => {
     if (!user) return;
-
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          email: user.email,
-          full_name: formData.full_name,
-          phone: formData.phone,
-          bio: formData.bio,
-        });
-
-      if (error) throw error;
-
+      await authAPI.updateProfile(formData);
       toast.success('Profile updated successfully!');
-      fetchProfile();
+      authAPI.getProfile().then(setProfile);
     } catch (error: any) {
       toast.error('Error updating profile: ' + error.message);
     } finally {
@@ -90,15 +79,9 @@ const Profile = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <AppLayout>
-        <div className="container mx-auto px-4 pt-24 pb-8">
-          <div className="text-center text-white">Loading profile...</div>
-        </div>
-      </AppLayout>
-    );
-  }
+  if (authLoading || loading) return <div className="text-center py-12">Loading...</div>;
+  if (error) return <div className="text-center text-red-500 py-12">{error}</div>;
+  if (!profile) return null;
 
   return (
     <AppLayout>
@@ -109,7 +92,7 @@ const Profile = () => {
             <p className="text-slate-400 text-lg">Manage your account settings</p>
           </div>
 
-          <Card className="backdrop-blur-xl bg-white/10 border-white/20">
+          <Card className="backdrop-blur-xl bg-white/10 border-white/20 animate-fade-in-up">
             <CardHeader>
               <CardTitle className="text-white">Personal Information</CardTitle>
               <CardDescription className="text-slate-400">
@@ -145,13 +128,13 @@ const Profile = () => {
                 />
               </div>
 
-              {/* Full Name */}
+              {/* Name */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300">Full Name</label>
+                <label className="text-sm font-medium text-slate-300">Name</label>
                 <Input
-                  value={formData.full_name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
-                  placeholder="Enter your full name"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Enter your name"
                   className="bg-white/5 border-white/10 text-white placeholder-slate-400"
                 />
               </div>
